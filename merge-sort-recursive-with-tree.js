@@ -38,16 +38,15 @@ function isCreateChildren(array) {
     return array.length > 1;
 }
 
-function getLeftChild(array) {
-    return isCreateChildren(array) ? getNewNode(
-        array.slice(0, getHalfwayIndex(array))
-    ): null
-}
+function getChild(array, halvedArray) {
 
-function getRightChild(array) {
-    return isCreateChildren(array) ? getNewNode(
-        array.slice(getHalfwayIndex(array))
-    ): null
+    if (isCreateChildren(array)) { 
+        return getNewNode(
+            halvedArray
+        )
+    }
+
+    return null;
 }
 
 function isCreateNode(array) {
@@ -55,13 +54,25 @@ function isCreateNode(array) {
 }
 
 
+function getLeftHalf(array) {
+    return array.slice(0, getHalfwayIndex(array));
+}
+
+function getRightHalf(array) {
+    return array.slice(getHalfwayIndex(array));
+}
+
 function getNewNode(array) {
 
-    return isCreateNode(array) ? { 
-        array, 
-        leftChild: getLeftChild(array), 
-        rightChild: getRightChild(array)
-    } : null;
+    if (isCreateNode(array)) {
+        return { 
+            array, 
+            leftChild: getChild(array, getLeftHalf(array)), 
+            rightChild: getChild(array, getRightHalf(array))
+        }
+    }
+
+    return null;
 }
 
 function getNodeWithSortedArray(node) {
