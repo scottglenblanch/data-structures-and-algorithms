@@ -17,8 +17,8 @@ function getSortedCombinedArray(array1, array2) {
         const isMoveLeftPointer = value1 < value2;
         const winner = isMoveLeftPointer ? value1 : value2;
 
-        i += isMoveLeftPointer ? 1 : 0;
-        j += isMoveLeftPointer ? 0 : 1;
+        i = isMoveLeftPointer ? i + 1 : i;
+        j = isMoveLeftPointer ? j : j + 1;
 
         combinedArray = [...combinedArray, winner];
 
@@ -28,7 +28,6 @@ function getSortedCombinedArray(array1, array2) {
 
     return combinedArray;
 }
-
 
 function getHalfwayIndex(array) {
     return Math.floor(array.length / 2);
@@ -46,6 +45,9 @@ function getChild(array, halvedArray) {
         )
     }
 
+    /*
+        Base Case
+    */
     return null;
 }
 
@@ -75,23 +77,47 @@ function getNewNode(array) {
     return null;
 }
 
+function isLeafNode(node) {
+    return node.array.length <= 1;
+}
+
+function getSortedArrayForNode(node) {
+    if (isLeafNode(node)) {
+        /*
+            Base Case
+        */
+        return node.array;
+    } else {
+        const sortedLeftChild = getChildNodeWithSortedArray(node, node.leftChild);
+        const sortedRightChild = getChildNodeWithSortedArray(node, node.rightChild)
+    
+        const sortedLeftChildArray = sortedLeftChild?.sortedArray ?? [];
+        const sortedRightChildArray = sortedRightChild?.sortedArray ?? [];
+
+
+        return getSortedCombinedArray(sortedLeftChildArray, sortedRightChildArray)
+    }
+}
+
+function getChildNodeWithSortedArray(node, childNode) {
+    
+    if (!isLeafNode(node) && childNode) {
+        return getNodeWithSortedArray(childNode);
+    } else {
+        /*
+            Base Case
+        */
+        return null;
+    }
+}
+
 function getNodeWithSortedArray(node) {
-
-    const isCombine = node.array.length > 1;
-
-    const sortedLeftChild = isCombine && node.leftChild ? getNodeWithSortedArray(node.leftChild) : null;
-    const sortedRightChild = isCombine && node.rightChild ? getNodeWithSortedArray(node.rightChild) : null
-
-    const sortedLeftChildArray = sortedLeftChild?.sortedArray ?? [];
-    const sortedRightChildArray = sortedRightChild?.sortedArray ?? [];
-
-    const sortedArray = isCombine ? getSortedCombinedArray(sortedLeftChildArray,sortedRightChildArray): node.array;
 
     return {
         ...node,
-        leftChild: sortedLeftChild,
-        rightChild: sortedRightChild,
-        sortedArray
+        leftChild: getChildNodeWithSortedArray(node, node.leftChild),
+        rightChild: getChildNodeWithSortedArray(node, node.rightChild),
+        sortedArray: getSortedArrayForNode(node)
     };
 }
 
